@@ -1,0 +1,150 @@
+﻿<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>热狗大战</title>
+	</head>
+
+	<body>
+		<div id="stage" style="margin: 0 auto; width: 1000px; height: 600px; text-align: center; vertical-align: middle" >
+			<canvas id="canvas" style="border:2px solid black;" width="1000" height="600">
+				不支持画板对象
+			</canvas>
+		</div>
+		<script type="text/javascript">
+			var canvas = document.getElementById("canvas");
+			var ctx = canvas.getContext("2d");
+			//背景图片
+			var bg = new Image();
+			bg.src = "images/bg.jpg";
+			//热狗图片
+			var hd = new Image();
+			hd.src = "images/hotdog.png";
+			//英雄图片
+			var h = new Image();
+			h.src = "images/hero.png";
+			//游戏结束图片
+			var end = new Image();
+			end.src = "images/end.jpg";
+			//计数板图片
+			var tip = new Image();
+			tip.src = "images/bullet_tip.png";
+			//计时板图片
+			var time_tip = new Image();
+			time_tip.src = "images/time_tip.png";
+
+			window.onload = function() {
+				var heroX = 450;
+				var time = 30, score = 0;
+				var n = function() {
+					ctx.drawImage(bg, 0, 0);
+					ctx.drawImage(tip, 800, 5);
+					ctx.drawImage(time_tip, 25, 25);
+
+				}
+				
+				var hotdogs = [];
+				var arr = [];
+
+				function Hotdog(x, y, canDelete) {
+					this.x = x;
+					this.y = y;
+					this.canDelete = canDelete;
+				}
+
+				var LastTime = 0;
+				var Interval = 500;
+				var current;
+				function isActionTime() {
+					current = new Date().getTime();
+					if (current >= LastTime + Interval) {
+						LastTime = current;
+						return true;
+					}
+					return false;
+				}
+
+				var interval1 = 1000;
+				function isActionTime1() {
+					current = new Date().getTime();
+					if (current >= LastTime + interval1) {
+						LastTime = current;
+						return true;
+					}
+					return false;
+				}
+
+				n();
+				var game = setInterval(function() {
+					arr = [];
+					n();
+					if (isActionTime())
+						hotdogs[hotdogs.length] = new Hotdog(Math.random() * 970, -55, false);
+					for (var i = 0; i < hotdogs.length; i++) {
+						hotdogs[i].y++;
+						ctx.drawImage(hd, hotdogs[i].x, hotdogs[i].y);
+						if (hotdogs[i].y > 600)
+							hotdogs[i].canDelete = true;
+
+					};
+					for (var j = 0; j < hotdogs.length; j++) {
+						if (hotdogs[j].x > heroX - 55 && hotdogs[j].x < heroX + 55 + 80 && hotdogs[j].y > 450 && hotdogs[j].y < 650) {
+							score++;
+							hotdogs[j].canDelete = true;
+						}
+
+					}
+					for (var j = 0; j < hotdogs.length; j++) {
+						if (!hotdogs[j].canDelete)
+							arr[arr.length] = hotdogs[j];
+					}
+					hotdogs = arr;
+					ctx.font = "30px 华文琥珀";
+					ctx.fillStyle = "white";
+					if (time >= 10)
+						ctx.fillText(time, 37, 65);
+					else
+						ctx.fillText(time, 45, 65);
+					ctx.drawImage(h, heroX, 450);
+					if (score >= 10)
+						ctx.fillText(score, 878, 63);
+					else
+						ctx.fillText(score, 888, 63);
+					if (!time) {
+						ctx.font = "50px 华文琥珀";
+						ctx.drawImage(end, 0, 0);
+						clearInterval(game);
+						if (score < 10)
+							ctx.fillText(score, 483, 435);
+						else
+							ctx.fillText(score, 465, 432);
+					}
+				}, 10)
+
+				
+				
+				
+
+				setInterval(function() {
+					time--;
+					
+				}, 1000)
+				
+				setInterval(function(){
+					check();
+				},10)
+				function check(){
+					document.onkeydown = function(event){
+						var e = event || window.event;
+						if(e&&e.keyCode==37){
+							heroX=heroX-30;
+						}
+						if(e&&e.keyCode==39){
+							heroX=heroX+30;
+						}
+					}
+				}
+			}
+		</script>
+	</body>
+</html>
